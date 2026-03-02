@@ -1,4 +1,4 @@
-name: depi_task_1
+name: food_delivery_app
 description: "A new Flutter project."
 publish_to: 'none'
 
@@ -10,8 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
   cupertino_icons: ^1.0.8
+
 
 dev_dependencies:
   flutter_test:
@@ -23,13 +25,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/avatar.png
-    - assets/burger.png
-    - assets/chicken.png
-    - assets/seafood.png
-    - assets/meat.png
-    - assets/main_pic.png
-    - assets/seafood_card.png
-    - assets/burger_card.png
-    - assets/pasta.png
+    - assets/
+    - assets/data/products.json
 

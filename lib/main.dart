@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
-import 'cart_page.dart';
-import 'details_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/cart/controller/cart_bloc.dart';
+import 'features/home/view/home_view.dart';
+import 'features/cart/view/cart_view.dart';
+import 'features/products/view/products_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,15 +14,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Food App",
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomePage(),
-        '/cart': (context) => const CartPage(),
-        '/details': (context) => const DetailsScreen(),
-      },
+    return BlocProvider(
+      create: (_) => CartBloc(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Food App",
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const HomePage(),
+          '/cart': (context) => const CartPage(),
+          '/details': (context) => const DetailsScreen(),
+        },
+      ),
     );
   }
 }
