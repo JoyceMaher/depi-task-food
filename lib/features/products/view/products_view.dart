@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cart/controller/cart_bloc.dart';
 import '../../cart/controller/cart_event.dart';
-import '../../../shared_widgets/section_header.dart';
+import '../../../shared_widgets/app_top_bar.dart';
 import '../../../shared_widgets/option_tile.dart';
+import '../../../shared_widgets/section_header.dart';
 import '../controller/details_controller.dart';
 import '../model/products.dart';
 import '../widgets/details_bottom_bar.dart';
@@ -18,12 +19,26 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   late final DetailsController controller;
-  bool _initialized = false;
+  Product? _product;
+  bool _didInit = false;
 
   @override
   void initState() {
     super.initState();
     controller = DetailsController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didInit) return;
+    _didInit = true;
+
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Product) {
+      _product = args;
+      controller.initFromProduct(args);
+    }
   }
 
   @override
@@ -34,20 +49,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments;
+    final product = _product;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    if (args is! Product) {
+    if (product == null) {
       return const Scaffold(
         body: Center(child: Text("No product data received.")),
       );
-    }
-
-    final product = args;
-
-    // ✅ init only once
-    if (!_initialized) {
-      _initialized = true;
-      controller.initFromProduct(product);
     }
 
     return AnimatedBuilder(
@@ -61,15 +70,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
             child: Stack(
               children: [
                 SingleChildScrollView(
-                  padding: const EdgeInsets.only(bottom: 120),
+                  padding: EdgeInsets.only(bottom: screenHeight * 0.15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Image + buttons
                       Stack(
                         children: [
                           SizedBox(
-                            height: 250,
+                            height: screenHeight * 0.35,
                             width: double.infinity,
                             child: Image.asset(
                               product.imagePath,
@@ -77,53 +85,49 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           ),
                           Positioned(
-                            left: 16,
-                            top: 16,
-                            child: IconButton(
-                              icon: const Icon(Icons.notifications, color: Colors.white),
-                              onPressed: () {},
-                            ),
-                          ),
-                          Positioned(
-                            right: 16,
-                            top: 16,
-                            child: IconButton(
-                              icon: const Icon(Icons.arrow_back, color: Colors.white),
-                              onPressed: () => Navigator.pop(context),
+                            left: screenWidth * 0.03,
+                            right: screenWidth * 0.03,
+                            top: screenHeight * 0.02,
+                            child: AppTopBar(
+                              title: "",
+                              lightIcons: true,
+                              onLeftPressed: () {},
+                              onRightPressed: () => Navigator.pop(context),
                             ),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: screenHeight * 0.02),
 
-                      // Title + description
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               product.title,
-                              style: const TextStyle(
-                                fontSize: 22,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.06,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: screenHeight * 0.008),
                             Text(
                               product.description,
-                              style: const TextStyle(fontSize: 14, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.035,
+                                color: Colors.grey,
+                              ),
                             ),
                           ],
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: screenHeight * 0.02),
 
-                      // Qty + price
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                         child: DetailsQuantityPriceRow(
                           quantity: controller.quantity,
                           onMinus: controller.minus,
@@ -132,60 +136,55 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: screenHeight * 0.03),
 
-                      // Size
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                         child: SectionHeader(title: "Size", badgeText: "Required"),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: screenHeight * 0.015),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                         child: Column(
                           children: product.sizes.map((s) {
                             final selected = controller.selectedSize == s.name;
-
                             return OptionTile(
                               title: s.name,
-                              selected: selected,
                               trailingText: "+${s.extraPrice.toStringAsFixed(2)} EGP",
+                              selected: selected,
                               onTap: () => controller.selectSize(s.name),
                             );
                           }).toList(),
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: screenHeight * 0.03),
 
-                      // Extras
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                         child: SectionHeader(title: "Extras", badgeText: "Optional"),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: screenHeight * 0.015),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
                         child: Column(
                           children: product.extras.map((e) {
                             final selected = controller.selectedExtras[e.name] ?? false;
-
                             return OptionTile(
                               title: e.name,
-                              selected: selected,
                               trailingText: "+${e.price.toStringAsFixed(2)} EGP",
+                              selected: selected,
                               onTap: () => controller.toggleExtra(e.name),
                             );
                           }).toList(),
                         ),
                       ),
 
-                      const SizedBox(height: 100),
+                      SizedBox(height: screenHeight * 0.12),
                     ],
                   ),
                 ),
 
-                // Bottom bar
                 Positioned(
                   left: 0,
                   right: 0,
@@ -196,7 +195,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     onMinus: controller.minus,
                     onPlus: controller.plus,
                     onAddToCart: () {
-                      context.read<CartBloc>().add(CartAddQuantity(controller.quantity));
+                      context.read<CartBloc>().add(
+                        CartAddQuantity(controller.quantity),
+                      );
                       Navigator.pushNamed(context, '/cart');
                     },
                   ),

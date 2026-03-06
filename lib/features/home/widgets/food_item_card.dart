@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../favorites/controller/favorites_cubit.dart';
+import '../../favorites/controller/favorites_state.dart';
 import '../../products/model/products.dart';
 
 class FoodItemCard extends StatelessWidget {
@@ -31,13 +35,44 @@ class FoodItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                product.imagePath,
-                width: double.infinity,
-                height: 120,
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio: 1.25,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        product.imagePath,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: BlocBuilder<FavoritesCubit, FavoritesState>(
+                        buildWhen: (prev, curr) => prev.ids != curr.ids,
+                        builder: (context, state) {
+                          final isFav = state.ids.contains(product.id);
+
+                          return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => context.read<FavoritesCubit>().toggle(product),
+                            child: CircleAvatar(
+                              radius: 18,
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                isFav ? Icons.favorite : Icons.favorite_border,
+                                color: Colors.red,
+                                size: 20,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -45,36 +80,50 @@ class FoodItemCard extends StatelessWidget {
               product.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               product.category,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13.5, color: Colors.grey),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              "${product.rating.toStringAsFixed(1)} ★ (${product.reviewsCount}+)",
               style: const TextStyle(
                 fontSize: 13.5,
-                color: Colors.orange,
-                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 6),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "${product.rating.toStringAsFixed(1)} ★ (${product.reviewsCount}+) ",
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  color: Colors.orange,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const Spacer(),
             Row(
               children: [
-                Text(
-                  "${product.priceEgp.toStringAsFixed(0)} EGP",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                Expanded(
+                  child: Text(
+                    "${product.priceEgp.toStringAsFixed(0)} EGP",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(

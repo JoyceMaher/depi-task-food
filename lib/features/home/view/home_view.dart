@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../../cart/view/cart_view.dart';
+import '../../favorites/view/favorites_view.dart';
 import '../../products/data/products_repository.dart';
 import '../../products/model/products.dart';
+
 import '../widgets/best_header.dart';
 import '../widgets/bottom_nav.dart';
 import '../widgets/food_item_card.dart';
@@ -28,13 +31,18 @@ class _HomePageState extends State<HomePage> {
       const _PlaceholderPage(title: "Profile"),
       const CartPage(),
       const _PlaceholderPage(title: "Quick Cart"),
-      const _PlaceholderPage(title: "Favorites"),
+      FavoritesView(),
       const HomePageContent(),
     ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
-      body: SafeArea(child: pages[_selectedIndex]),
+      body: SafeArea(
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: pages,
+        ),
+      ),
       bottomNavigationBar: HomeBottomNav(
         selectedIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -107,8 +115,6 @@ class _HomePageContentState extends State<HomePageContent> {
               const SizedBox(height: 22),
               const BestTodayHeader(),
               const SizedBox(height: 14),
-
-              // ✅ SHOW ALL ITEMS
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -117,13 +123,12 @@ class _HomePageContentState extends State<HomePageContent> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 0.72,
+                  childAspectRatio: 0.58,
                 ),
                 itemBuilder: (context, index) {
                   return FoodItemCard(product: products[index]);
                 },
               ),
-
               const SizedBox(height: 18),
             ],
           ),

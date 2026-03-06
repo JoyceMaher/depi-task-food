@@ -18,35 +18,44 @@ class DetailsBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final padding = size.width * 0.04;
+    final fontSize = size.width * 0.04;
+    final iconSize = size.width * 0.06;
+    final borderRadius = size.width * 0.05;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(padding),
       color: Colors.white,
       child: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          padding: EdgeInsets.symmetric(vertical: padding, horizontal: padding),
           decoration: BoxDecoration(
             color: Colors.red,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                totalText,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              Flexible(
+                child: Text(
+                  totalText,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: fontSize,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               TextButton(
                 onPressed: onAddToCart,
-                child: const Text(
+                child: Text(
                   "Add to Cart",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: fontSize,
                   ),
                 ),
               ),
@@ -54,24 +63,31 @@ class DetailsBottomBar extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: onMinus,
-                    icon: const Icon(Icons.remove, color: Colors.white),
+                    icon: Icon(Icons.remove, color: Colors.white, size: iconSize),
                     constraints: const BoxConstraints(),
+                    padding: EdgeInsets.zero,
                   ),
-                  Text(
-                    "$quantity",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  SizedBox(
+                    width: size.width * 0.08,
+                    child: Center(
+                      child: Text(
+                        "$quantity",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: fontSize,
+                        ),
+                      ),
                     ),
                   ),
                   IconButton(
                     onPressed: onPlus,
-                    icon: const Icon(Icons.add, color: Colors.white),
+                    icon: Icon(Icons.add, color: Colors.white, size: iconSize),
                     constraints: const BoxConstraints(),
+                    padding: EdgeInsets.zero,
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

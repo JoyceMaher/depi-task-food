@@ -33,7 +33,7 @@ class ProductExtraOption {
 }
 
 class Product {
-  final String id; // ✅ String because JSON has "p1"
+  final String id;
   final String title;
   final String category;
   final double priceEgp;
@@ -80,4 +80,28 @@ class Product {
       extras: extrasJson,
     );
   }
+
+  Map<String, dynamic> toMap() => {
+    "id": id,
+    "title": title,
+    "category": category,
+    "priceEgp": priceEgp,
+    "rating": rating,
+    "reviewsCount": reviewsCount,
+    "imagePath": imagePath,
+    "description": description,
+  };
+
+  factory Product.fromMap(Map<String, dynamic> map) => Product(
+    id: map["id"] as String,
+    title: map["title"] as String,
+    category: map["category"] as String,
+    priceEgp: (map["priceEgp"] as num).toDouble(),
+    rating: (map["rating"] as num).toDouble(),
+    reviewsCount: (map["reviewsCount"] as num).toInt(),
+    imagePath: map["imagePath"] as String,
+    description: map["description"] as String,
+    sizes: const [],
+    extras: const [],
+  );
 }
