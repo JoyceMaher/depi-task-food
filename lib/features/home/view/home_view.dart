@@ -71,8 +71,7 @@ class _HomePageContentState extends State<HomePageContent> {
   @override
   void initState() {
     super.initState();
-    _productsFuture = ProductsRepository().loadProducts();
-  }
+    _productsFuture = ProductsRepository().loadLocalProducts();  }
 
   @override
   Widget build(BuildContext context) {

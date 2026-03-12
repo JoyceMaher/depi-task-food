@@ -12,13 +12,13 @@ class FoodItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNetworkImage = product.imagePath.startsWith('http');
+
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () => Navigator.pushNamed(
-        context,
-        '/details',
-        arguments: product,
-      ),
+      onTap: () {
+        Navigator.pushNamed(context, '/details', arguments: product);
+      },
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -42,7 +42,18 @@ class FoodItemCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Image.asset(
+                      child: isNetworkImage
+                          ? Image.network(
+                        product.imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/placeholder.png',
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                          : Image.asset(
                         product.imagePath,
                         fit: BoxFit.cover,
                       ),
@@ -57,12 +68,15 @@ class FoodItemCard extends StatelessWidget {
 
                           return GestureDetector(
                             behavior: HitTestBehavior.opaque,
-                            onTap: () => context.read<FavoritesCubit>().toggle(product),
+                            onTap: () =>
+                                context.read<FavoritesCubit>().toggle(product),
                             child: CircleAvatar(
                               radius: 18,
                               backgroundColor: Colors.white,
                               child: Icon(
-                                isFav ? Icons.favorite : Icons.favorite_border,
+                                isFav
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
                                 color: Colors.red,
                                 size: 20,
                               ),

@@ -8,8 +8,21 @@ class FavoritesRepository {
   Future<List<Product>> getAll() async {
     final db = await FavoritesDb.instance.database;
     final rows = await db.query(FavoritesDb.table, orderBy: "title ASC");
-    return rows.map(Product.fromMap).toList();
-  }
+    if (rows.isEmpty) return [];
+    return rows.map((row) {
+      return Product(
+        id: row['id'].toString(),
+        title: row['title']?.toString() ?? '',
+        category: row['category']?.toString() ?? '',
+        priceEgp: (row['priceEgp'] as num?)?.toDouble() ?? 0.0,
+        rating: (row['rating'] as num?)?.toDouble() ?? 0.0,
+        reviewsCount: (row['reviewsCount'] as int?) ?? 0,
+        imagePath: row['imagePath']?.toString() ?? '',
+        description: row['description']?.toString() ?? '',
+        sizes: const [],
+        extras: const [],
+      );
+    }).toList();  }
 
   Future<bool> exists(String id) async {
     final db = await FavoritesDb.instance.database;

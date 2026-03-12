@@ -55,7 +55,9 @@ class FavoritesView extends StatelessWidget {
                       child: Row(
                         children: [
                           ClipRRect(
-                            borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(16),
+                            ),
                             child: Image.asset(
                               product.imagePath,
                               width: 100,
@@ -97,12 +99,15 @@ class FavoritesView extends StatelessWidget {
                               builder: (context, state) {
                                 final isFav = state.ids.contains(product.id);
                                 return GestureDetector(
-                                  onTap: () => context.read<FavoritesCubit>().toggle(product),
+                                  onTap: () =>
+                                      context.read<FavoritesCubit>().toggle(product),
                                   child: CircleAvatar(
                                     radius: 18,
                                     backgroundColor: Colors.white,
                                     child: Icon(
-                                      isFav ? Icons.favorite : Icons.favorite_border,
+                                      isFav
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
                                       color: Colors.red,
                                       size: 20,
                                     ),

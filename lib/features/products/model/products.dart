@@ -1,3 +1,4 @@
+
 class ProductSizeOption {
   final String name;
   final double extraPrice;
@@ -6,13 +7,6 @@ class ProductSizeOption {
     required this.name,
     required this.extraPrice,
   });
-
-  factory ProductSizeOption.fromJson(Map<String, dynamic> json) {
-    return ProductSizeOption(
-      name: json['name'] as String,
-      extraPrice: (json['extraPrice'] as num).toDouble(),
-    );
-  }
 }
 
 class ProductExtraOption {
@@ -23,13 +17,6 @@ class ProductExtraOption {
     required this.name,
     required this.price,
   });
-
-  factory ProductExtraOption.fromJson(Map<String, dynamic> json) {
-    return ProductExtraOption(
-      name: json['name'] as String,
-      price: (json['price'] as num).toDouble(),
-    );
-  }
 }
 
 class Product {
@@ -41,7 +28,6 @@ class Product {
   final int reviewsCount;
   final String imagePath;
   final String description;
-
   final List<ProductSizeOption> sizes;
   final List<ProductExtraOption> extras;
 
@@ -60,24 +46,45 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     final sizesJson = (json['sizes'] as List<dynamic>? ?? const [])
-        .map((e) => ProductSizeOption.fromJson(e as Map<String, dynamic>))
+        .map((e) => ProductSizeOption(
+      name: e['name'] as String,
+      extraPrice: (e['extraPrice'] as num).toDouble(),
+    ))
         .toList();
 
     final extrasJson = (json['extras'] as List<dynamic>? ?? const [])
-        .map((e) => ProductExtraOption.fromJson(e as Map<String, dynamic>))
+        .map((e) => ProductExtraOption(
+      name: e['name'] as String,
+      price: (e['price'] as num).toDouble(),
+    ))
         .toList();
 
     return Product(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       title: json['title'] as String,
       category: json['category'] as String,
       priceEgp: (json['priceEgp'] as num).toDouble(),
       rating: (json['rating'] as num).toDouble(),
-      reviewsCount: (json['reviewsCount'] as num).toInt(),
+      reviewsCount: (json['reviewsCount'] as int?) ?? 0,
       imagePath: json['imagePath'] as String,
       description: json['description'] as String,
       sizes: sizesJson,
       extras: extrasJson,
+    );
+  }
+
+  factory Product.fromApiJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'].toString(),
+      title: json['title'] as String,
+      category: json['category'] as String,
+      priceEgp: (json['price'] as num).toDouble(),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      reviewsCount: (json['stock'] as int?) ?? 0, // using stock as reviewsCount
+      imagePath: json['thumbnail'] as String,
+      description: json['description'] as String? ?? '',
+      sizes: const [],
+      extras: const [],
     );
   }
 
@@ -91,17 +98,4 @@ class Product {
     "imagePath": imagePath,
     "description": description,
   };
-
-  factory Product.fromMap(Map<String, dynamic> map) => Product(
-    id: map["id"] as String,
-    title: map["title"] as String,
-    category: map["category"] as String,
-    priceEgp: (map["priceEgp"] as num).toDouble(),
-    rating: (map["rating"] as num).toDouble(),
-    reviewsCount: (map["reviewsCount"] as num).toInt(),
-    imagePath: map["imagePath"] as String,
-    description: map["description"] as String,
-    sizes: const [],
-    extras: const [],
-  );
 }
